@@ -12,11 +12,15 @@ Route::get('/', function () {
 require __DIR__.'/auth.php';
 
 // 3. Route untuk SISWA
-Route::middleware(['auth', 'verified', 'role:siswa'])->group(function () {
-    Route::get('/siswa/dashboard', function () {
-        return view('siswa.dashboard'); // Nanti kita buat
-    })->name('siswa.dashboard');
-});
+// 3. Route untuk SISWA
+Route::middleware(['auth', 'verified', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Siswa\DashboardController::class, 'index'])->name('dashboard');
+    
+    // Resource route untuk pengaduan (create, store, show)
+    Route::get('/pengaduan/buat', [\App\Http\Controllers\Siswa\PengaduanController::class, 'create'])->name('pengaduan.create');
+    Route::post('/pengaduan', [\App\Http\Controllers\Siswa\PengaduanController::class, 'store'])->name('pengaduan.store');
+    Route::get('/pengaduan/{pengaduan}', [\App\Http\Controllers\Siswa\PengaduanController::class, 'show'])->name('pengaduan.show');
+});;
 
 // 4. Route untuk ADMIN
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
