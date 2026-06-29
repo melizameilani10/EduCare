@@ -23,12 +23,21 @@ Route::middleware(['auth', 'verified', 'role:siswa'])->prefix('siswa')->name('si
 });;
 
 // 4. Route untuk ADMIN
-Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard'); // Nanti kita buat
-    })->name('admin.dashboard');
-});
+// 4. Route untuk ADMIN
+Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    
+    // Kategori
+    Route::get('/kategori', [\App\Http\Controllers\Admin\KategoriController::class, 'index'])->name('kategori');
+    Route::post('/kategori', [\App\Http\Controllers\Admin\KategoriController::class, 'store'])->name('kategori.store');
+    Route::delete('/kategori/{kategori}', [\App\Http\Controllers\Admin\KategoriController::class, 'destroy'])->name('kategori.destroy');
 
+    // Pengaduan
+    Route::get('/pengaduan', [\App\Http\Controllers\Admin\PengaduanController::class, 'index'])->name('pengaduan');
+    Route::get('/pengaduan/{pengaduan}', [\App\Http\Controllers\Admin\PengaduanController::class, 'show'])->name('pengaduan.show');
+    Route::patch('/pengaduan/{pengaduan}/status', [\App\Http\Controllers\Admin\PengaduanController::class, 'updateStatus'])->name('pengaduan.status');
+    Route::post('/pengaduan/{pengaduan}/tanggapan', [\App\Http\Controllers\Admin\PengaduanController::class, 'storeTanggapan'])->name('pengaduan.tanggapan');
+});
 // 5. Redirect setelah Login (Sesuai Role)
 // Kita akan atur ini di file AuthController Breeze, tapi untuk sementara 
 // kita bisa pakai Event Listener atau modifikasi LoginResponse.
